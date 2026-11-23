@@ -515,7 +515,8 @@ def build():
     keep, shipped = set(), set()
     for sid, s in scenes:
         for jp in s["jobs"]:
-            j = J(jp); j["import"] = not s.get("imported"); jobs.append(j); slot = j["slot"]; keep.add(int(slot))
+            # test builds always re-import: a release build in between removes their clips from the UE project as stale
+            j = J(jp); j["import"] = TEST or not s.get("imported"); jobs.append(j); slot = j["slot"]; keep.add(int(slot))
             base = "/Game/Mods/HD-ATOOL_P/anim/"
             assets[group_of[sid]] += [base + slot, base + slot + "a"] + [base + slot + "a/" + p["clip"] for p in j["partners"]]
             for p in j["partners"]:          # prop mesh/skeleton/material: once, in the first pack that uses them

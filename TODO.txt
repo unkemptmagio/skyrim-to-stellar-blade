@@ -7,6 +7,10 @@ Leito build 3 (2026-11-23), leftovers after QA pass 1 (everything else from that
 [ ] Bound Doggy S3: tied right hand rides on Adam's belly with each thrust (~25 deg/frame wrist)
 [ ] PELA: ask the author to upstream the climaxAt climax-face change (our local la_anim.lua edit is lost on update)
 
+[ ] Billyy prop test (2026-11-23, user): the scenes work and most props show up and follow, but most have HEAVY misalignment
+    (bodies and props). Billyy needs its own alignment pass before release: contact on long clips, partner placement, prop
+    offsets vs the SB bodies. Note: Billyy stages are long non-looping clips (~370 frames each vs Leito ~40), so every pass
+    runs on every frame (5x slower per scene): do the deferred FK speed-up first.
 [ ] Billyy (binary hkx) test scene B_Billyy_LegUp works in game but has a lot of misalignment (user, 2026-11-22).
     Its lint already flags bodies overlapping (S1, S2) and lost hand touches. Look at it after the speed-up and the
     one-clip-per-scene layout: body-overlap push, floor/foot contact, the contact pass on long clips.

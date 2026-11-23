@@ -274,7 +274,8 @@ def track_clip(track, fps, n=None):
     return {"names": NAMES, "parents": PARENTS, "fps": fps, "frames": fr}
 
 
-SWORD_LEN_CM = 50.0   # Eve's blade is 1.40 m in game (FModel bounds); shrunk to toy size (user pick, 2026-11-23)
+SWORD_LEN_CM = 140.0  # Eve's blade at its real 1.40 m. A 50 cm shrink via a root scale key came out paper-thin but still full
+                      # length in game (each part scaled about its own bone, bone spacing not): don't scale this rig
 
 
 def sword_clip(toy, mesh, sword_skel, pommel_z, full_len=140.0):
@@ -289,4 +290,6 @@ def sword_clip(toy, mesh, sword_skel, pommel_z, full_len=140.0):
     for fr in toy["frames"]:
         p, q = fr[1]; Rt = rt.q2m(q); f = [list(x) for x in rest]
         f[0] = [list(np.array(p) + Rt @ off), list(rt.m2q(Rt @ flip @ Rrest))]; frames.append(f)
-    return {"names": S["names"], "parents": S["parents"], "fps": toy["fps"], "frames": frames, "root_scale": k}
+    out = {"names": S["names"], "parents": S["parents"], "fps": toy["fps"], "frames": frames}
+    if abs(k - 1.0) > 1e-6: out["root_scale"] = k
+    return out
