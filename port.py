@@ -55,7 +55,8 @@ SWORD_POMMEL_Z = -13.2      # cm, sword space: the pommel end (the blade runs to
 SLOT_RANGES = [(352, 699), (908, 1000)]
 TRANSITION_S, STAGE_SECONDS, CONTACT_GATE_CM = 0.5, 7.0, 20.0
 ANKLE_Z = {"eve": 15.0, "tachy": 15.0, "adam": 13.5}   # rest-pose ankle height above the floor (cm): planted feet sit here      # a stage whose last frame is > 1 cm from its first gets a 0.2 s blend between repeats
-DISABLED_PACKS = {x for x in os.environ.get("PORT_DISABLED", "Billyy").split(",") if x}   # not built/installed; slots stay reserved
+DISABLED_PACKS = {x for x in os.environ.get("PORT_DISABLED", "").split(",") if x}   # not built/installed; slots stay reserved
+# (Billyy was disabled until 2026-11-23; it now ships as "BillyyExperimental", see RENAME)
 DISABLED_SCENES = {"Leito_Kissing_Female_Start"}   # QA 2026-11-23 "horrible, disable it": not built/installed, slot stays reserved
 MAX_PAK_ASSETS = 400     # per container; 938 crashed the game at startup, 470 loads fine
 PACK_CHUNK = {}          # pack name -> chunk id, assigned in build (1, 2, ...)
@@ -478,10 +479,14 @@ OPTIONAL = {"Leito": ("Rough", "_nc_")}   # pack -> (suffix, scene-id marker): L
                                            # optional pak + PELA file of their own (user, 2026-11-23: some people won't want them)
 
 
+RENAME = {"Billyy": "BillyyExperimental"}   # Billyy ships flagged experimental (heavy misalignment in most scenes, user QA)
+
+
 def release_pack(sid, s):
-    """the pak / PELA group a scene ships in: its source pack, or the pack's optional variant"""
+    """the pak / PELA group a scene ships in: its source pack (or its release name), or the pack's optional variant"""
     suf, mark = OPTIONAL.get(s["pack"], (None, None))
-    return s["pack"] + suf if suf and mark in sid.lower() else s["pack"]
+    if suf and mark in sid.lower(): return s["pack"] + suf
+    return RENAME.get(s["pack"], s["pack"])
 
 
 def pack_groups(registry, only=()):

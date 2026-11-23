@@ -21,3 +21,6 @@ release/*
 !release/SkyrimPort-Leito/
 release/SkyrimPort-Leito/*
 !release/SkyrimPort-Leito/README.txt
+!release/SkyrimPort-Billyy/
+release/SkyrimPort-Billyy/*
+!release/SkyrimPort-Billyy/README.txt
