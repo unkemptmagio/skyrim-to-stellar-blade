@@ -67,6 +67,11 @@ Environment switches: `PORT_ONLY=<ids>` (test build into its own folder), `PORT_
 Beta. Leito's pack is the reference (26 scenes, base + optional "Rough"). Billyy's pack ports but needs more alignment
 work. See `TODO.txt` for open items.
 
+## License
+
+The code is MIT licensed (see `LICENSE`). That covers this pipeline only, not the animations, sounds or game
+assets it processes: those stay with their authors.
+
 ## Credits
 
 ATOOL, PEFA, PELA and UE4SS by their authors. SLAL animations by their authors (Leito, Billyy, ...). SexLab Framework.
