@@ -81,7 +81,22 @@ KNOWN ISSUES (beta)
   - Rough: tied elbows sink into her back (Bound Doggy, last stages); Adam's hand stops a little short in Bound Fisting S3.
   - The animations were made for Skyrim bodies, so contact is corrected per scene but not perfect on every frame.
 
-CREDITS / PERMISSIONS
-  Animations: Leito (SLAL Animations by Leito). Permission: TODO, required before upload.
-  Sounds: SexLab Framework (SexLab P+ moan voices 06 = Eve and 04 = Tachy, fx). Permission: TODO, required before upload.
-  ATOOL, PEFA, PELA: their authors.
+CREDITS
+  All credit for the animations goes to their author; this is a port, the motion is Leito's.
+  Animations: Leito - SLAL Animation Pack by Leito SE
+              https://www.loverslab.com/files/file/6357-slal-animation-pack-by-leito-se/
+  Sounds:     built from SexLab P+ by Scrab (https://www.loverslab.com/files/file/25318-sexlab-p/,
+              https://github.com/Scrabx3/SexLab) and the original SexLab Framework by Ashal
+              (https://www.loverslab.com/forum/49-sexlab-framework/): P+ female voices 06 (Eve) and 04 (Tachy) and the
+              SexLab fx, mixed and synced to each scene.
+  ATOOL, PEFA, PELA, UE4SS: their authors.
+  Porting pipeline (open source, MIT): https://github.com/unkemptmagio/skyrim-to-stellar-blade
+
+TAKEDOWN
+  The original authors could not be reached before release. If you are the author of any animation or sound used here
+  (or represent them) and want it removed, get in touch: it comes down, no questions asked.
+
+AI ASSISTANCE
+  The porting pipeline (retargeting, contact and hand correction, transitions, sound mixing, build tools) was written with
+  AI assistance (Claude by Anthropic). The animations are Leito's, converted by that code: no AI-generated animation, art
+  or voice is included.
