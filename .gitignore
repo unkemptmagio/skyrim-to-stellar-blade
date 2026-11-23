@@ -1,0 +1,22 @@
+# whitelist: code and docs only. No game files, animations, sounds, meshes, skeleton exports, registry or local paths.
+*
+!.gitignore
+!README.md
+!PROPS_DESIGN.md
+!TODO.txt
+!config.example.json
+!port.py
+!tools/
+tools/*
+!tools/*.py
+!tools/launch_test.sh
+tools/prep_scene.py
+tools/__pycache__/
+!ue/
+ue/*
+!ue/*.py
+!release/
+release/*
+!release/SkyrimPort-Leito/
+release/SkyrimPort-Leito/*
+!release/SkyrimPort-Leito/README.txt

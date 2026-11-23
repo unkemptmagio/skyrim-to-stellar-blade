@@ -1,0 +1,47 @@
+Skyrim port - open items (newest first)
+
+Leito build 3 (2026-11-23), leftovers after QA pass 1 (everything else from that pass is fixed, awaiting recheck):
+[ ] Bound Doggy S4-S5: Eve's tied elbows ~10 cm inside her back (Skyrim wrists on her lower back, SB back thicker)
+[ ] Bound Fisting S3: Adam's hand ~4 cm short of her vulva: shoulder higher above it than his arm is long -> waist/spine bend
+[ ] Bound Blowjob S1 shaft ~70 deg to her mouth (head turn capped at 40); S2 her head partly inside Adam (~1/3 of frames)
+[ ] Bound Doggy S3: tied right hand rides on Adam's belly with each thrust (~25 deg/frame wrist)
+[ ] PELA: ask the author to upstream the climaxAt climax-face change (our local la_anim.lua edit is lost on update)
+
+[ ] Billyy (binary hkx) test scene B_Billyy_LegUp works in game but has a lot of misalignment (user, 2026-11-22).
+    Its lint already flags bodies overlapping (S1, S2) and lost hand touches. Look at it after the speed-up and the
+    one-clip-per-scene layout: body-overlap push, floor/foot contact, the contact pass on long clips.
+[x] Speed: vectorized FK (6.5x), C json encoder, parallel scenes (PORT_JOBS), cached hkx/source poses
+[x] One clip per scene (1 ATOOL slot instead of 2n-1), slimmed jsons
+[x] Transitions: moving crossfade, length from pose distance over all roles; loop wrap drops the duplicated end frame
+[x] Feet: planted feet locked + snapped to the floor (legs.plant_feet), plants across the loop wrap share one spot
+[~] Bodies overlapping: knees out (spread_legs), raised feet/calves out onto his skin (legs._feet_out, 2026-11-23). Hip/torso:
+    a neck/spine bend pass was tried and dropped (Lotus 6->5 cm only, S5 worse, broke oral mouth contact): needs a real
+    body-vs-body solver. Open: Lotus head, Aggressive Doggy S1 spine, Bound Anal Missionary S3 thigh.
+From the code review (2026-11-22), deferred:
+[x] Perf: compute/store only mapped bones (rt.run keep=, done 2026-11-22):
+    ~10x on every pass and removes the huge json.loads(json.dumps()) deep copies (OOM risk on 900-frame clips)
+[-] Perf: precompute FK once per role per pass. Measured 2026-11-23: a scene prepares in 43 s, 27 s of it Blender FBX export,
+    ~16 s all passes together; 26 scenes ~7 min at PORT_JOBS=3. Not worth the risk; revisit for the 200-scene Billyy pack.
+[x] Quality: feet planted again on the assembled scene clip (plant_feet loop=False, 2026-11-23)
+[x] Quality: leg_ik twists the thigh so the knee hinge stays square to the hip-knee-foot plane; lint flags knees > 5 cm inside
+[x] Quality: loop seam spread over the last 0.2 s per role, same length, nothing stops (tr.cycle, 2026-11-23)
+[x] Latent: pack_groups keeps {pack: [groups]} (2026-11-23)
+[x] Lint tuned against QA pass 1 (2026-11-23): body-touch loss dropped (fired at 100% in Ready scenes), hands inside from 9 cm,
+    new: arm / knee inside, wrist twist > 30 deg/frame, vulva/shaft touch loss; disabled packs/scenes left out of lint.txt
+[ ] Solo dildo: texture/UVs (flat silicone material for now)
+[x] Props in solo + duo scenes (2026-11-23, see PROPS_DESIGN.md): any number per scene, tagged or not; skinned / bind-space /
+    root props handled; flat materials by name. Test build only (_SkyrimPortTest): Billyy Armbinder Cowgirl, Cuffed Doggy,
+    Hogtied Facefuck, Staff solo; Leito Lesbian Double Dildo, Female Chair Solo.
+[ ] Props: Leito Lesbian Double Dildo rides WEAPON = her right hand (Skyrim default; the track never moves) - check in game
+    whether it should be a strap-on (pelvis). Eve's sword as solo toy needs an FModel export of the sword (psk).
+[ ] Furniture scenes (placed beds / tables, not AnimObjects), 3+ actor scenes
+[ ] Nexus release: permissions sheet per source pack, packaging, slot range note, names snippet
+From the second review (2026-11-22), fixed: write retries (Windows), early frame trim, seam bridge before transitions,
+  cleanup only after Blender succeeds, re-prepared scenes keep their slot, failed scenes can't collide, dead workers,
+  dedupe, straight-leg knee follows the toes, atomic prop skeleton. Deferred:
+[x] Quality: phase-matched transitions (tr.match_phase, 2026-11-23)
+[x] Quality: shaft re-aimed through the entry on blends between two penetrating stages (ct.aim, 2026-11-23)
+[x] Quality: no static bridges anymore (seam spread per role)
+[-] Perf: one Blender per scene / shared male FK: roles already export in parallel threads; deferred (see FK note above)
+[-] Perf: workers re-parse SLAL jsons on spawn: ~1-2 s per worker, deferred
+[x] find_scene: SLAL files in natural order, so "10.10" beats "10.9" (2026-11-23)

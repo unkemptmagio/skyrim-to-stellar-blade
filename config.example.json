@@ -1,0 +1,12 @@
+{
+  "skyrim_mods": "C:/Path/To/MO2/mods",
+  "bodyslide_meshes": "C:/Path/To/BodySlide Output/meshes/actors/character/character assets/",
+  "sexlab_sounds": "C:/Path/To/MO2/mods/SexLab Framework PPLUS/Sound/fx/SexLab/",
+  "sexlab_sounds_aio": "C:/Path/To/MO2/mods/Sexlab Framework Sound Replacer AIO/Sound/fx/SexLab/",
+  "sb_game": "C:/Path/To/StellarBlade/SB",
+  "vortex_staging": "C:/Path/To/Vortex Mods/stellarblade",
+  "ue_root": "C:/Path/To/UE_4.26",
+  "modkit": "C:/Path/To/SBModKit/SB",
+  "blender": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe",
+  "fmodel_exports": "C:/Path/To/FModel/Output/Exports/SB/Content/"
+}
