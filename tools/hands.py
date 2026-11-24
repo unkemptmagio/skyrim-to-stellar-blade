@@ -45,23 +45,31 @@ LOST_CM = 3.0     # lint: a source touch that ends further than this in SB is "l
 _cache = {}
 
 
-def make_body(local_by_bone, names):
+ALL_BODY_SKIP = ("weapon", "shield", "magic")   # full=True: arms, hands, neck and feet too (prop fit in score.py)
+
+
+def make_body(local_by_bone, names, skip=NOT_BODY):
     body = []
     for i, v in local_by_bone.items():
-        if len(v) < 30 or any(k in names[i].lower() for k in NOT_BODY): continue
+        if len(v) < 30 or any(k in names[i].lower() for k in skip): continue
         v = np.asarray(v)[::max(1, len(v) // MAXV)]; c = v.mean(0); V = v - c; r = np.linalg.norm(V, axis=1); ok = r > 1e-6
         body.append((i, c, V[ok] / r[ok, None], r[ok]))
     return body
 
 
-def sb_body(role, names=None):
-    """body model of a role. names = the clip's bone list (slimmed clips): part indices are remapped to it by bone name"""
+def sb_body(role, names=None, full=False):
+    """body model of a role. names = the clip's bone list (slimmed clips): part indices are remapped to it by bone name.
+    full=True keeps arms, hands, neck and feet (left out by default: the hand passes push hands out of the torso/legs)"""
     if names is not None:
-        key = (role, tuple(names))
+        key = (role, tuple(names), full)
         if key not in _cache:
-            full = sb_body(role); at = {n: k for k, n in enumerate(names)}
-            _cache[key] = dict(names=list(names), body=[(at[full["names"][i]],) + tuple(rest) for i, *rest in full["body"] if full["names"][i] in at])
+            whole = sb_body(role, full=full); at = {n: k for k, n in enumerate(names)}
+            _cache[key] = dict(names=list(names), body=[(at[whole["names"][i]],) + tuple(rest) for i, *rest in whole["body"] if whole["names"][i] in at])
         return _cache[key]
+    if full:
+        if (role, "full") not in _cache:
+            sb_body(role); _cache[(role, "full")] = dict(names=_cache[role]["names"], body=make_body(_cache[role + ":parts"], _cache[role]["names"], ALL_BODY_SKIP))
+        return _cache[(role, "full")]
     if role not in _cache:
         mesh, sk = SB_BODY[role]; E = ue.load_skeleton(ct.R0 + sk); n = E["names"]; idx = {b: i for i, b in enumerate(n)}
         R, P = rt.world_mats(E["parents"], E["pose"]); pts, bn, _ = ue.read_psk_points(mesh); by = {}
@@ -73,7 +81,8 @@ def sb_body(role, names=None):
             i = idx.get(b)
             if i is None: i = main[int(np.argmin(np.linalg.norm(np.array([P[j] for j in main]) - np.array(p), axis=1)))]
             by.setdefault(i, []).append(p)
-        _cache[role] = dict(names=n, body=make_body({i: (np.array(v) - P[i]) @ R[i] for i, v in by.items()}, n))
+        _cache[role + ":parts"] = {i: (np.array(v) - P[i]) @ R[i] for i, v in by.items()}
+        _cache[role] = dict(names=n, body=make_body(_cache[role + ":parts"], n))
     return _cache[role]
 
 

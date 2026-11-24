@@ -15,6 +15,23 @@ R0 = __file__.replace("\\", "/").rsplit("/", 2)[0]
 MODS = cfg.SKYRIM_MODS
 NAMES, PARENTS = ["Root", "Bip001-Toy"], [-1, 0]
 GATE_CM = 20.0      # toy axis further than this from the entry (median) = not inserted in this stage: leave it
+PARKED_Z = -5000.0  # unused props sit 100 m under the floor
+
+
+def load_built(scene_dir, slot):
+    """the props a prepared scene ships: [(mesh json, clip json, verts array)]"""
+    out = []
+    for cp in sorted(glob.glob("%s/%d_prop*.json" % (scene_dir, slot))):
+        k = re.search(r"_prop(\d+)\.json$", cp).group(1); mp = "%s/prop%s_mesh.json" % (scene_dir, k)
+        if os.path.exists(mp):
+            m = json.load(open(mp)); out.append((m, json.load(open(cp)), np.array(m["verts"])))
+    return out
+
+
+def world_verts(clip, verts, f):
+    """prop verts in world space at frame f, or None while it is parked"""
+    R, P = rt.world_mats(clip["parents"], clip["frames"][min(f, len(clip["frames"]) - 1)])
+    return None if P[1][2] < PARKED_Z else P[1] + verts @ R[1].T
 
 
 def stage_objects(root):

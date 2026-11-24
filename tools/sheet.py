@@ -1,11 +1,13 @@
 # sheet.py <scene dir> <registry scene json key> -> <scene dir>/sheet.png
 # Contact sheet: every stage at start / middle / end, side view (X-Z) and front view (Y-Z), stick figures in UE space.
-# Eve = pink, partner = blue, genital rig = orange, entry target = red dot. Lets a bad port be spotted without the game.
+# Eve = pink, partner = blue, genital rig = orange, entry target = red dot, props = grey dots. Lets a bad port be
+# spotted without the game.
 import sys, os, json, re
 import numpy as np
 from PIL import Image, ImageDraw
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import retarget as rt, contact as ct, ue
+import retarget as rt, contact as ct, ue, props as pr
+PROP_DOTS = 250
 
 CORE = re.compile(r"^(Bip001(-Pelvis|-Spine\d?|-Neck|-Head|-[LR]-(Clavicle|UpperArm|Forearm|Hand|Thigh|Calf|Foot|Toe0))?|NPC-Genitals\w*|GenitalsLag\w*|GenitalsScrotumLag|Genitals|Schlong)$")
 COL = {"eve": (235, 90, 140), "adam": (70, 130, 220), "tachy": (60, 170, 120), "mg": (240, 150, 40)}
@@ -30,6 +32,7 @@ def render(scene_dir, scene, target):
     for pt in scene["parts"]:
         if pt["kind"] == "scene":
             data = {r: json.load(open("%s/%d_%s.json" % (scene_dir, pt["slot"], r))) for r in roles}
+            data["props"] = [(c, v[::max(1, len(v) // PROP_DOTS)]) for _, c, v in pr.load_built(scene_dir, pt["slot"])]
             rows += [(data, (a0, (a0 + a1) // 2, a1)) for a0, a1, _ in pt["stages"]]
         elif pt["kind"] == "stage":
             data = {r: json.load(open("%s/%d_%s.json" % (scene_dir, pt["slot"], r))) for r in roles}
@@ -47,6 +50,10 @@ def render(scene_dir, scene, target):
                 ox, oy = (ci * 2 + vi) * CELL, 24 + si * CELL
                 dr.rectangle([ox, oy, ox + CELL - 1, oy + CELL - 1], outline=(210, 210, 210))
                 proj = lambda p: (ox + CELL / 2 + (p[ax[0]] - c[ax[0]]) * sc, oy + CELL / 2 - (p[ax[1]] - c[ax[1]]) * sc)
+                for c_, v_ in data.get("props", []):      # under the bodies, so a prop sunk into one shows as hidden dots
+                    w = pr.world_verts(c_, v_, f)
+                    for p in (() if w is None else w):
+                        x, y = proj(p); dr.point((x, y), fill=(120, 120, 120))
                 for r in roles:
                     for a, b in segs[r][0]: dr.line([proj(a), proj(b)], fill=COL[r], width=3)
                 if ent_l is not None:
